@@ -39,6 +39,57 @@ describe('POST /', () => {
     });
 });
 
+describe('PUT /:id', () => {
+    it('should toggle the purchased status of an item', async () => {
+      const postResponse = await request(app)
+      .post('/add-item')
+      .send({ item_name: 'Butter' });
+  
+      const itemId = postResponse.body.id;
+  
+      const putResponse = await request(app).put(`/${itemId}`);
+      expect(putResponse.status).toBe(200);
+      expect(putResponse.body.purchased).toBe(true);
+  
+      const putResponse2 = await request(app).put(`/${itemId}`);
+      expect(putResponse2.status).toBe(200);
+      expect(putResponse2.body.purchased).toBe(false);
+    });
+  
+    it('should return a 404 status code if the item is not found', async () => {
+      const response = await request(app).put('/333');
+      expect(response.status).toBe(404)
+      expect(response.body.message).toBe('Item not found')
+    })
+  });
+
+describe('PUT /edit/:id', () => {
+    it('should update the item name', async () => {
+  
+      const postResponse = await request(app)
+        .post('/add-item')
+        .send({ item_name: 'Tea' });
+  
+      const itemId = postResponse.body.id;
+  
+      const putResponse = await request(app)
+        .put(`/edit/${itemId}`)
+        .send({ item_name: 'Coffee' });
+      expect(putResponse.status).toBe(200);
+      expect(putResponse.body).toEqual({
+        id: itemId,
+        item_name: 'Coffee',
+        purchased: false,
+      });
+    });
+
+    it('should return a 404 status code if the item to edit is not found', async () => {
+        const response = await request(app).put('/edit/333').send({ item_name: 'Water' });
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBe('Item not found');
+      });
+});
+
 describe('DELETE /:id', () => {
     it('should delete an item from the list', async () => {
       const postResponse = await request(app)

@@ -30,6 +30,37 @@ app.post('/add-item', (req, res) => {
     res.status(201).json(newItem);
 });
 
+app.put('/:id', (req, res) => {
+    const { id } = req.params;
+    const itemId = parseInt(id);
+  
+    const item = groceries.find((grocery) => grocery.id === itemId);
+  
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found'});
+    }
+  
+    item.purchased = !item.purchased;
+  
+    res.status(200).json(item);
+  });
+
+app.put('/edit/:id', (req,res) => {
+    const { id } = req.params;
+    const { item_name } = req.body;
+    const itemId = parseInt(id);
+  
+    const item = groceries.find((grocery) => grocery.id === itemId);
+  
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+  
+    if (item_name) item.item_name = item_name;
+  
+    res.status(200).json(item);
+});
+
 app.delete('/:id', (req, res) => {
     const { id } = req.params;
     const itemId = parseInt(id);
