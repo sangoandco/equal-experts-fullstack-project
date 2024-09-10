@@ -12,6 +12,39 @@ app.get('/', (req, res) => {
     res.json(groceries);
 });
 
+app.post('/add-item', (req, res) => {
+    const { item_name } = req.body;
+
+    if (!item_name) {
+        return res.status(400).json({ message: 'Item name is required' });
+    }
+
+    const newItem = {
+        id: groceries.length + 1,
+        item_name,
+        purchased: false,
+    };
+
+    groceries.push(newItem);
+
+    res.status(201).json(newItem);
+});
+
+app.delete('/:id', (req, res) => {
+    const { id } = req.params;
+    const itemId = parseInt(id);
+  
+    const itemIndex = groceries.findIndex((grocery) => grocery.id === itemId);
+  
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+  
+    groceries.splice(itemIndex, 1);
+  
+    res.status(200).json({ message: 'Item deleted successfully' });
+});
+
 module.exports = app;
 
 if (require.main === module) {
